@@ -19,9 +19,15 @@ const Signup = () => {
   const [password, setPassword] = useState();
   const [pic, setPic] = useState();
   const [picLoading, setPicLoading] = useState(false);
-
-  const submitHandler = async () => {
-    setPicLoading(true);
+  const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,12}$/;
+    
+    const submitHandler = async (e) =>{
+      e.preventDefault();
+      const isValidEmail = emailRegex.test(email);
+      const isValidPassword = passwordRegex.test(password);
+      if(isValidEmail && isValidPassword){
+        setPicLoading(true);
     if (!name || !email || !password || !confirmpassword) {
       toast({
         title: "Please Fill all the Feilds",
@@ -71,7 +77,8 @@ const Signup = () => {
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
       setPicLoading(false);
-      history.push("/chats");
+      // history.push("/chats");
+      history.push("/");
     }catch (error) {
       toast({
         title: "Error Occured!",
@@ -83,8 +90,26 @@ const Signup = () => {
       });
       setPicLoading(false);
     }
-  };
+      }else if(!isValidEmail){
+        toast({
+          title : 'Invalid email',
+          description:'Please enter a valid email address',
+          status:'error',
+          duration:3000,
+          isClosable:true
+        })
+      }else if(!isValidPassword){
+        toast({
+          title: 'Invalid password.',
+          description: 'Password must be 8-12 characters long and include a number, a letter.',
+          status: 'error',
+          duration: 2000,
+          isClosable: true,
+        })
+      }
+    }
 
+ 
   const postDetails = (pics) => {
     setPicLoading(true);
     if (pics === undefined) {
@@ -145,6 +170,7 @@ const Signup = () => {
           type="email"
           placeholder="Enter Your Email Address"
           onChange={(e) => setEmail(e.target.value)}
+          // onChange={handleEmailChange}
         />
       </FormControl>
       <FormControl id="password" isRequired>
